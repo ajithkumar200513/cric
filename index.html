@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Team Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Enter Cricket Team Details</h1>
+        <form id="teamForm">
+            <div class="form-group">
+                <label for="teamName">Team Name</label>
+                <input type="text" id="teamName" name="teamName" required>
+            </div>
+
+            <h3>Players</h3>
+            <div id="players">
+                <!-- Player forms will be appended here -->
+            </div>
+
+            <button type="button" id="addPlayerBtn">Add Player</button>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
