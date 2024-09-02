@@ -62,16 +62,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Team details submitted successfully!');
-                document.getElementById('teamForm').reset();
-                document.getElementById('players').innerHTML = '';
-                playerCount = 0;
-                loadTeams(); // Reload teams after submission
-            } else {
-                alert('Failed to submit team details: ' + data.error);
+        .then(response => response.text()) // Get response as text first
+        .then(text => {
+            try {
+                const data = JSON.parse(text); // Attempt to parse as JSON
+                if (data.success) {
+                    alert('Team details submitted successfully!');
+                    document.getElementById('teamForm').reset();
+                    document.getElementById('players').innerHTML = '';
+                    playerCount = 0;
+                    loadTeams(); // Reload teams after submission
+                } else {
+                    alert('Failed to submit team details: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                alert('An error occurred while submitting the form: ' + error.message);
             }
         })
         .catch(error => {
@@ -82,37 +88,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadTeams() {
         fetch('/api/teams')
-        .then(response => response.json())
-        .then(teams => {
-            const teamsDiv = document.getElementById('teams');
-            teamsDiv.innerHTML = ''; // Clear existing content
-
-            teams.forEach(team => {
-                const teamDiv = document.createElement('div');
-                teamDiv.classList.add('team');
-                teamDiv.innerHTML = `
-                    <h3>${team.teamName}</h3>
-                    <ul>
-                        ${team.players.map(player => `
-                            <li>
-                                <strong>${player.playerName}</strong><br>
-                                Batting Order: ${player.battingOrder}<br>
-                                Batting Style: ${player.battingStyle}<br>
-                                Bowling Style: ${player.bowlingStyle}<br>
-                                Responsibility: ${player.responsibility}
-                            </li>
-                        `).join('')}
-                    </ul>
-                `;
-                teamsDiv.appendChild(teamDiv);
+            .then(response => response.json())
+            .then(data => {
+                const teamsList = document.getElementById('teamsList');
+                teamsList.innerHTML = ''; // Clear previous teams
+                data.forEach(team => {
+                    const teamDiv = document.createElement('div');
+                    teamDiv.classList.add('team');
+                    teamDiv.innerHTML = `
+                        <h2>${team.teamName}</h2>
+                        <ul>
+                            ${team.players.map(player => `
+                                <li>
+                                    <strong>${player.playerName}</strong> - ${player.battingOrder}, 
+                                    ${player.battingStyle}, ${player.bowlingStyle}
+                                    ${player.responsibility ? `, Responsibility: ${player.responsibility}` : ''}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                    teamsList.appendChild(teamDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading teams:', error);
+                alert('Error loading teams: ' + error.message);
             });
-        })
-        .catch(error => {
-            console.error('Error loading teams:', error);
-            alert('Error loading teams: ' + error.message);
-        });
     }
 
-    // Initial load of teams
-    loadTeams();
+    loadTeams(); // Load teams on page load
 });
