@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "api/teams.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/teams",
+        "dest": "/api/teams.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/public/$1"
+      }
+    ]
+  }
+  

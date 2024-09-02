@@ -1,13 +1,5 @@
-const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
-const app = express();
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors()); // Enable CORS for all routes
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost/cricket-team', {
@@ -34,29 +26,26 @@ const teamSchema = new mongoose.Schema({
 const Team = mongoose.model('Team', teamSchema);
 
 // Define route
-app.post('/submit', (req, res) => {
-    console.log('Form Data Received:', req.body);
-
-    const { teamName, players } = req.body;
-
-    const team = new Team({
-        teamName,
-        players
-    });
-
-    team.save()
-        .then(() => {
-            console.log('Team saved to database');
-            res.json({ success: true });
-        })
-        .catch(error => {
+module.exports = async (req, res) => {
+    if (req.method === 'POST') {
+        const { teamName, players } = req.body;
+        const team = new Team({ teamName, players });
+        try {
+            await team.save();
+            res.status(200).json({ success: true });
+        } catch (error) {
             console.error('Error saving to database:', error);
             res.status(500).json({ success: false, error: error.message });
-        });
-});
-
-// Start server
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+        }
+    } else if (req.method === 'GET') {
+        try {
+            const teams = await Team.find();
+            res.status(200).json(teams);
+        } catch (error) {
+            console.error('Error fetching from database:', error);
+            res.status(500).json({ error: error.message });
+        }
+    } else {
+        res.status(405).json({ message: 'Method not allowed' });
+    }
+};
