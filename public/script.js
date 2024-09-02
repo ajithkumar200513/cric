@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Extract teamName separately
         formObject.teamName = formData.get('teamName');
 
-        fetch('/submit', {
+        fetch('/api/submit', {
             method: 'POST',
             body: JSON.stringify(formObject),
             headers: {
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function loadTeams() {
-        fetch('/teams')
+        fetch('/api/teams')
             .then(response => response.json())
             .then(teams => {
                 const teamsContainer = document.getElementById('teams');

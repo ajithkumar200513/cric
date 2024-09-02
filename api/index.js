@@ -34,7 +34,7 @@ const teamSchema = new mongoose.Schema({
 const Team = mongoose.model('Team', teamSchema);
 
 // Define routes
-app.post('/submit', (req, res) => {
+app.post('/api/submit', (req, res) => {
     console.log('Form Data Received:', req.body);
 
     const { teamName, players } = req.body;
@@ -55,7 +55,7 @@ app.post('/submit', (req, res) => {
         });
 });
 
-app.get('/teams', (req, res) => {
+app.get('/api/teams', (req, res) => {
     Team.find()
         .then(teams => res.json(teams))
         .catch(error => {
