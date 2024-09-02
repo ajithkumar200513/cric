@@ -33,8 +33,8 @@ const teamSchema = new mongoose.Schema({
 
 const Team = mongoose.model('Team', teamSchema);
 
-// Define route to submit form data
-app.post('/api/submit', (req, res) => {
+// Define routes
+app.post('/submit', (req, res) => {
     console.log('Form Data Received:', req.body);
 
     const { teamName, players } = req.body;
@@ -55,20 +55,17 @@ app.post('/api/submit', (req, res) => {
         });
 });
 
-// Define route to get all teams
-app.get('/api/teams', (req, res) => {
-    Team.find({})
-        .then(teams => {
-            res.json(teams);
-        })
+app.get('/teams', (req, res) => {
+    Team.find()
+        .then(teams => res.json(teams))
         .catch(error => {
             console.error('Error retrieving teams:', error);
-            res.status(500).json({ success: false, error: error.message });
+            res.status(500).json({ error: error.message });
         });
 });
 
 // Start server
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

@@ -40,12 +40,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const formObject = { players: [] };
 
         formData.forEach((value, key) => {
+            // Extract player index from the key
             const match = key.match(/(\d+)/);
             if (match) {
                 const index = match[1];
                 if (!formObject.players[index]) {
                     formObject.players[index] = {};
                 }
+                // Remove the number from the key
                 const baseKey = key.replace(index, '');
                 formObject.players[index][baseKey] = value;
             } else {
@@ -53,72 +55,61 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Extract teamName separately
         formObject.teamName = formData.get('teamName');
 
-        fetch('/api/submit', {
+        fetch('/submit', {
             method: 'POST',
             body: JSON.stringify(formObject),
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text(); // Get response as text first
-        })
-        .then(text => {
-            try {
-                const data = JSON.parse(text); // Attempt to parse as JSON
-                if (data.success) {
-                    alert('Team details submitted successfully!');
-                    document.getElementById('teamForm').reset();
-                    document.getElementById('players').innerHTML = '';
-                    playerCount = 0;
-                    loadTeams(); // Reload teams after submission
-                } else {
-                    alert('Failed to submit team details: ' + data.error);
-                }
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-                alert('An error occurred while submitting the form: ' + error.message);
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Team details submitted successfully!');
+                document.getElementById('teamForm').reset();
+                document.getElementById('players').innerHTML = '';
+                playerCount = 0;
+                loadTeams(); // Load teams after successful submission
+            } else {
+                alert('Failed to submit team details.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while submitting the form: ' + error.message);
+            alert('An error occurred while submitting the form.');
         });
     });
 
     function loadTeams() {
-        fetch('/api/teams')
+        fetch('/teams')
             .then(response => response.json())
             .then(teams => {
-                const teamsListDiv = document.getElementById('teamsList');
-                teamsListDiv.innerHTML = ''; // Clear the list
+                const teamsContainer = document.getElementById('teams');
+                teamsContainer.innerHTML = '';
                 teams.forEach(team => {
                     const teamDiv = document.createElement('div');
                     teamDiv.classList.add('team');
-                    teamDiv.innerHTML = `<h3>${team.teamName}</h3>`;
-                    team.players.forEach(player => {
-                        const playerDiv = document.createElement('div');
-                        playerDiv.classList.add('player');
-                        playerDiv.innerHTML = `
-                            <p><strong>Name:</strong> ${player.playerName}</p>
-                            <p><strong>Batting Order:</strong> ${player.battingOrder}</p>
-                            <p><strong>Batting Style:</strong> ${player.battingStyle}</p>
-                            <p><strong>Bowling Style:</strong> ${player.bowlingStyle}</p>
-                            <p><strong>Responsibility:</strong> ${player.responsibility || 'None'}</p>
-                        `;
-                        teamDiv.appendChild(playerDiv);
-                    });
-                    teamsListDiv.appendChild(teamDiv);
+                    teamDiv.innerHTML = `
+                        <h3>${team.teamName}</h3>
+                        <ul>
+                            ${team.players.map(player => `
+                                <li>
+                                    <strong>${player.playerName}</strong> - Batting Order: ${player.battingOrder}, 
+                                    Batting Style: ${player.battingStyle}, Bowling Style: ${player.bowlingStyle}, 
+                                    Responsibility: ${player.responsibility}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                    teamsContainer.appendChild(teamDiv);
                 });
             })
             .catch(error => {
                 console.error('Error loading teams:', error);
-                alert('Error loading teams: ' + error.message);
+                alert('Error loading teams.');
             });
     }
 
