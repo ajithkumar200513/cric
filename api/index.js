@@ -57,14 +57,13 @@ app.post('/api/submit', (req, res) => {
 
 // Define route to get all teams
 app.get('/api/teams', (req, res) => {
-    Team.find()
+    Team.find({})
         .then(teams => {
-            console.log('Teams retrieved:', teams); // Log teams for debugging
             res.json(teams);
         })
         .catch(error => {
             console.error('Error retrieving teams:', error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ success: false, error: error.message });
         });
 });
 

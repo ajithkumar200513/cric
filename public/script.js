@@ -62,7 +62,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.text()) // Get response as text first
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text(); // Get response as text first
+        })
         .then(text => {
             try {
                 const data = JSON.parse(text); // Attempt to parse as JSON
@@ -89,25 +94,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadTeams() {
         fetch('/api/teams')
             .then(response => response.json())
-            .then(data => {
-                const teamsList = document.getElementById('teamsList');
-                teamsList.innerHTML = ''; // Clear previous teams
-                data.forEach(team => {
+            .then(teams => {
+                const teamsListDiv = document.getElementById('teamsList');
+                teamsListDiv.innerHTML = ''; // Clear the list
+                teams.forEach(team => {
                     const teamDiv = document.createElement('div');
                     teamDiv.classList.add('team');
-                    teamDiv.innerHTML = `
-                        <h2>${team.teamName}</h2>
-                        <ul>
-                            ${team.players.map(player => `
-                                <li>
-                                    <strong>${player.playerName}</strong> - ${player.battingOrder}, 
-                                    ${player.battingStyle}, ${player.bowlingStyle}
-                                    ${player.responsibility ? `, Responsibility: ${player.responsibility}` : ''}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    `;
-                    teamsList.appendChild(teamDiv);
+                    teamDiv.innerHTML = `<h3>${team.teamName}</h3>`;
+                    team.players.forEach(player => {
+                        const playerDiv = document.createElement('div');
+                        playerDiv.classList.add('player');
+                        playerDiv.innerHTML = `
+                            <p><strong>Name:</strong> ${player.playerName}</p>
+                            <p><strong>Batting Order:</strong> ${player.battingOrder}</p>
+                            <p><strong>Batting Style:</strong> ${player.battingStyle}</p>
+                            <p><strong>Bowling Style:</strong> ${player.bowlingStyle}</p>
+                            <p><strong>Responsibility:</strong> ${player.responsibility || 'None'}</p>
+                        `;
+                        teamDiv.appendChild(playerDiv);
+                    });
+                    teamsListDiv.appendChild(teamDiv);
                 });
             })
             .catch(error => {
