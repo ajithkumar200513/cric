@@ -1,11 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors()); // Enable CORS for all routes
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost/cricket-team', {
@@ -37,7 +43,10 @@ app.post('/api/submit', (req, res) => {
 
     const { teamName, players } = req.body;
 
-    const team = new Team({ teamName, players });
+    const team = new Team({
+        teamName,
+        players
+    });
 
     team.save()
         .then(() => {
@@ -52,15 +61,20 @@ app.post('/api/submit', (req, res) => {
 
 app.get('/api/teams', (req, res) => {
     Team.find()
-        .then(teams => res.json({ teams }))
+        .then(teams => res.json(teams))
         .catch(error => {
             console.error('Error retrieving teams:', error);
             res.status(500).json({ error: error.message });
         });
 });
 
+// Serve the HTML file
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Start server
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

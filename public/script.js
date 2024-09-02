@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     let playerCount = 0;
 
-    // Add player input fields dynamically
     document.getElementById('addPlayerBtn').addEventListener('click', function() {
         playerCount++;
         const playerDiv = document.createElement('div');
@@ -34,10 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('players').appendChild(playerDiv);
     });
 
-    // Handle form submission
     document.getElementById('teamForm').addEventListener('submit', function(event) {
         event.preventDefault();
-
+        
         const formData = new FormData(this);
         const formObject = { players: [] };
 
@@ -73,23 +71,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 playerCount = 0;
                 loadTeams(); // Reload teams after submission
             } else {
-                alert('Failed to submit team details.');
+                alert('Failed to submit team details: ' + data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while submitting the form.');
+            alert('An error occurred while submitting the form: ' + error.message);
         });
     });
 
-    // Load teams data
     function loadTeams() {
         fetch('/api/teams')
         .then(response => response.json())
-        .then(data => {
-            const teamList = document.getElementById('teamList');
-            teamList.innerHTML = ''; // Clear existing list
-            data.teams.forEach(team => {
+        .then(teams => {
+            const teamsDiv = document.getElementById('teams');
+            teamsDiv.innerHTML = ''; // Clear existing content
+
+            teams.forEach(team => {
                 const teamDiv = document.createElement('div');
                 teamDiv.classList.add('team');
                 teamDiv.innerHTML = `
@@ -106,15 +104,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         `).join('')}
                     </ul>
                 `;
-                teamList.appendChild(teamDiv);
+                teamsDiv.appendChild(teamDiv);
             });
         })
         .catch(error => {
             console.error('Error loading teams:', error);
-            alert('Error loading teams.');
+            alert('Error loading teams: ' + error.message);
         });
     }
 
-    // Initial load of teams data
+    // Initial load of teams
     loadTeams();
 });
