@@ -85,7 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadTeams() {
         fetch('/api/teams')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(teams => {
                 const teamsContainer = document.getElementById('teams');
                 teamsContainer.innerHTML = '';
