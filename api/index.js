@@ -3,11 +3,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost/cricket-team', {
@@ -33,16 +31,13 @@ const teamSchema = new mongoose.Schema({
 
 const Team = mongoose.model('Team', teamSchema);
 
-// Define route to handle form submission
-app.post('/api/teams', (req, res) => {
+// Define routes
+app.post('/api/submit', (req, res) => {
     console.log('Form Data Received:', req.body);
 
     const { teamName, players } = req.body;
 
-    const team = new Team({
-        teamName,
-        players
-    });
+    const team = new Team({ teamName, players });
 
     team.save()
         .then(() => {
@@ -55,18 +50,17 @@ app.post('/api/teams', (req, res) => {
         });
 });
 
-// Define route to fetch teams
 app.get('/api/teams', (req, res) => {
     Team.find()
-        .then(teams => res.json(teams))
+        .then(teams => res.json({ teams }))
         .catch(error => {
-            console.error('Error fetching teams:', error);
-            res.status(500).json({ success: false, error: error.message });
+            console.error('Error retrieving teams:', error);
+            res.status(500).json({ error: error.message });
         });
 });
 
 // Start server
-const port = process.env.PORT || 3000;
+const port = 3000;
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

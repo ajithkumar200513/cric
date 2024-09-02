@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     let playerCount = 0;
 
+    // Add player input fields dynamically
     document.getElementById('addPlayerBtn').addEventListener('click', function() {
         playerCount++;
         const playerDiv = document.createElement('div');
@@ -33,9 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('players').appendChild(playerDiv);
     });
 
+    // Handle form submission
     document.getElementById('teamForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        
+
         const formData = new FormData(this);
         const formObject = { players: [] };
 
@@ -55,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         formObject.teamName = formData.get('teamName');
 
-        fetch('/api/teams', {
+        fetch('/api/submit', {
             method: 'POST',
             body: JSON.stringify(formObject),
             headers: {
@@ -69,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('teamForm').reset();
                 document.getElementById('players').innerHTML = '';
                 playerCount = 0;
+                loadTeams(); // Reload teams after submission
             } else {
                 alert('Failed to submit team details.');
             }
@@ -79,32 +82,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Load teams data
     function loadTeams() {
         fetch('/api/teams')
         .then(response => response.json())
         .then(data => {
-            const teamsContainer = document.getElementById('teamsContainer');
-            teamsContainer.innerHTML = '';
-
-            data.forEach(team => {
+            const teamList = document.getElementById('teamList');
+            teamList.innerHTML = ''; // Clear existing list
+            data.teams.forEach(team => {
                 const teamDiv = document.createElement('div');
                 teamDiv.classList.add('team');
-                teamDiv.innerHTML = `<h2>${team.teamName}</h2>`;
-                
-                team.players.forEach((player, index) => {
-                    teamDiv.innerHTML += `
-                        <div class="player">
-                            <h3>Player ${index + 1}</h3>
-                            <p><strong>Name:</strong> ${player.playerName}</p>
-                            <p><strong>Batting Order:</strong> ${player.battingOrder}</p>
-                            <p><strong>Batting Style:</strong> ${player.battingStyle}</p>
-                            <p><strong>Bowling Style:</strong> ${player.bowlingStyle}</p>
-                            <p><strong>Additional Responsibility:</strong> ${player.responsibility || 'None'}</p>
-                        </div>
-                    `;
-                });
-
-                teamsContainer.appendChild(teamDiv);
+                teamDiv.innerHTML = `
+                    <h3>${team.teamName}</h3>
+                    <ul>
+                        ${team.players.map(player => `
+                            <li>
+                                <strong>${player.playerName}</strong><br>
+                                Batting Order: ${player.battingOrder}<br>
+                                Batting Style: ${player.battingStyle}<br>
+                                Bowling Style: ${player.bowlingStyle}<br>
+                                Responsibility: ${player.responsibility}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                teamList.appendChild(teamDiv);
             });
         })
         .catch(error => {
@@ -113,5 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Initial load of teams data
     loadTeams();
 });

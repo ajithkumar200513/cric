@@ -9,26 +9,32 @@
 <body>
 
     <div class="container">
-        <h1>Enter Cricket Team Details</h1>
-        <form id="teamForm">
-            <div class="form-group">
-                <label for="teamName">Team Name</label>
-                <input type="text" id="teamName" name="teamName" required>
+        <!-- Registration Form -->
+        <section id="registration">
+            <h1>Enter Cricket Team Details</h1>
+            <form id="teamForm">
+                <div class="form-group">
+                    <label for="teamName">Team Name</label>
+                    <input type="text" id="teamName" name="teamName" required>
+                </div>
+
+                <h3>Players</h3>
+                <div id="players">
+                    <!-- Player forms will be appended here -->
+                </div>
+
+                <button type="button" id="addPlayerBtn">Add Player</button>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+        <!-- Data Display Section -->
+        <section id="dataDisplay">
+            <h2>Registered Teams</h2>
+            <div id="teamList">
+                <!-- Teams will be listed here -->
             </div>
-
-            <h3>Players</h3>
-            <div id="players">
-                <!-- Player forms will be appended here -->
-            </div>
-
-            <button type="button" id="addPlayerBtn">Add Player</button>
-            <button type="submit">Submit</button>
-        </form>
-
-        <h1>View Teams</h1>
-        <div id="teamsContainer">
-            <!-- Teams will be loaded here -->
-        </div>
+        </section>
     </div>
 
     <script src="script.js"></script>
