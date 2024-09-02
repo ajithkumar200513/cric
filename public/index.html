@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Team</title>
+    <title>Cricket Team Management</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="register">
+<body>
 
     <div class="container">
         <h1>Enter Cricket Team Details</h1>
@@ -24,7 +24,11 @@
             <button type="button" id="addPlayerBtn">Add Player</button>
             <button type="submit">Submit</button>
         </form>
-        <button id="viewTeamsBtn">View Teams</button>
+
+        <h1>View Teams</h1>
+        <div id="teamsContainer">
+            <!-- Teams will be loaded here -->
+        </div>
     </div>
 
     <script src="script.js"></script>

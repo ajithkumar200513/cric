@@ -1,14 +1,15 @@
 {
   "name": "cricket-team",
   "version": "1.0.0",
+  "description": "Cricket team management app",
+  "main": "server/index.js",
   "scripts": {
-    "start": "vercel dev"
+    "start": "node server/index.js",
+    "build": "echo 'No build step required'"
   },
   "dependencies": {
-    "mongoose": "^6.0.0",
+    "express": "^4.18.2",
+    "mongoose": "^7.4.0",
     "cors": "^2.8.5"
-  },
-  "engines": {
-    "node": "16.x"
   }
 }

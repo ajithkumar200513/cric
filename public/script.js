@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         formObject.teamName = formData.get('teamName');
 
-        fetch('https://my-app.vercel.app/api/teams', {
+        fetch('/api/teams', {
             method: 'POST',
             body: JSON.stringify(formObject),
             headers: {
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function loadTeams() {
-        fetch('https://my-app.vercel.app/api/teams')
+        fetch('/api/teams')
         .then(response => response.json())
         .then(data => {
             const teamsContainer = document.getElementById('teamsContainer');
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error loading teams:', error);
             alert('Error loading teams.');
         });
-}
+    }
 
     loadTeams();
 });
